@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "checkJs": true,
+    "target": "ES6",
+    "baseUrl": "./src/",
+    "paths": {
+      "*": [
+        "*"
+      ]
+    }
+  },
+  "exclude": ["node_modules", "**/node_modules/*"]
+}
