@@ -2,25 +2,14 @@
 
 'use strict';
 
-import * as fs from 'fs';
 import { localAssetPath, localPath } from '../modules/fs.js'
+import { Graph } from '../modules/2dgraph.js'
 
-const input = fs.readFileSync(localAssetPath(import.meta, 'input.txt'), "ascii").split('\n').filter(x => Boolean(x));
+const opts = {
+  adjacency: {n: true, s: true, w: true, e: true}
+};
 
-const height = input.length;
-const width = input[0].length;
-
-let graph = input.map((row, rowIdx) => row.split('').map(function(cell, colIdx){
-  let adjacent = [];
-  if (rowIdx > 0) adjacent.push({x: colIdx, y: rowIdx-1});
-  if (rowIdx < height-1) adjacent.push({x: colIdx, y: rowIdx+1});
-  if (colIdx > 0) adjacent.push({x: colIdx-1, y: rowIdx});
-  if (colIdx < width-1) adjacent.push({x: colIdx+1, y: rowIdx});
-  return {
-    height: Number(cell),
-    adjacent: adjacent
-  };
-}));
+let graph = new Graph(localAssetPath(import.meta, 'input.txt'), opts);
 
 function bfs(start) {
   let remaining = [start];
@@ -28,13 +17,13 @@ function bfs(start) {
 
   while (remaining.length > 0) {
     let node = remaining.shift();
-    if (node.height == 9 || node.visited)
+    if (node.value == 9 || node.visited)
       continue;
 
     node.visited = true;
 
     for (let n of node.adjacent)
-      remaining.push(graph[n.y][n.x]);
+      remaining.push(n.link);
 
     visited += 1;
   }
@@ -43,7 +32,7 @@ function bfs(start) {
 }
 
 const basinSizes = graph.flat().reduce(function(acc, v) {
-  if (v.height == 9 || v.visited) return acc;
+  if (v.value == 9 || v.visited) return acc;
   return [...acc, bfs(v)];
 }, []);
 

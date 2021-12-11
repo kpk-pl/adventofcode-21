@@ -2,29 +2,18 @@
 
 'use strict';
 
-import * as fs from 'fs';
 import { localAssetPath, localPath } from '../modules/fs.js'
+import { Graph } from '../modules/2dgraph.js';
 
-const input = fs.readFileSync(localAssetPath(import.meta, 'input.txt'), "ascii").split('\n').filter(x => Boolean(x));
+const opts = {
+  adjacency: {n: true, s: true, w: true, e: true}
+};
 
-const height = input.length;
-const width = input[0].length;
-
-let graph = input.map((row, rowIdx) => row.split('').map(function(cell, colIdx){
-  let adjacent = [];
-  if (rowIdx > 0) adjacent.push({x: colIdx, y: rowIdx-1});
-  if (rowIdx < height-1) adjacent.push({x: colIdx, y: rowIdx+1});
-  if (colIdx > 0) adjacent.push({x: colIdx-1, y: rowIdx});
-  if (colIdx < width-1) adjacent.push({x: colIdx+1, y: rowIdx});
-  return {
-    height: Number(cell),
-    adjacent: adjacent
-  };
-}));
+let graph = new Graph(localAssetPath(import.meta, 'input.txt'), opts);
 
 const riskLevels = graph.flat().reduce(function(acc, v){
-  if (v.adjacent.reduce((belows, adj) => graph[adj.y][adj.x].height <= v.height ? belows+1 : belows, 0) == 0)
-    return acc + v.height + 1;
+  if (v.adjacent.reduce((belows, adj) => adj.link.value <= v.value ? belows+1 : belows, 0) == 0)
+    return acc + v.value + 1;
   return acc;
 }, 0);
 
