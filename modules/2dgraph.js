@@ -31,6 +31,8 @@ export class Graph {
       }
 
       return {
+        x: colIdx,
+        y: rowIdx,
         value: Number(cell),
         adjacent: adjacent
       };
@@ -46,10 +48,21 @@ export class Graph {
   flat() {
     return this.graph.flat();
   }
+
+  display() {
+    function repr(value) {
+      if (value == 0)
+        return ' ';
+      if (value > 9)
+        return '&';
+      return String(value);
+    }
+    return this.graph.map(row => row.reduce((acc, n) => acc + repr(n.value), '')).join('\n');
+  }
 }
 
 export function bfs(start, cond, action) {
-  let remaining = [start];
+  let remaining = [start].flat();
   let visited = 0;
 
   while (remaining.length > 0) {
