@@ -3,37 +3,19 @@
 'use strict';
 
 import { localAssetPath, localPath } from '../modules/fs.js'
-import { Graph } from '../modules/2dgraph.js'
+import { Graph, bfs } from '../modules/2dgraph.js'
 
 const opts = {
   adjacency: {n: true, s: true, w: true, e: true}
 };
 
 let graph = new Graph(localAssetPath(import.meta, 'input.txt'), opts);
-
-function bfs(start) {
-  let remaining = [start];
-  let visited = 0;
-
-  while (remaining.length > 0) {
-    let node = remaining.shift();
-    if (node.value == 9 || node.visited)
-      continue;
-
-    node.visited = true;
-
-    for (let n of node.adjacent)
-      remaining.push(n.link);
-
-    visited += 1;
-  }
-
-  return visited;
-}
+const cond = (node) => node.value < 9 && !Boolean(node.visited);
+const action = (node) => node.visited = true;
 
 const basinSizes = graph.flat().reduce(function(acc, v) {
-  if (v.value == 9 || v.visited) return acc;
-  return [...acc, bfs(v)];
+  if (! cond(v)) return acc;
+  return [...acc, bfs(v, cond, action)];
 }, []);
 
 basinSizes.sort((l,r) => r-l);

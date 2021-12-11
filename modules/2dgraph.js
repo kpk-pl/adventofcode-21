@@ -47,3 +47,24 @@ export class Graph {
     return this.graph.flat();
   }
 }
+
+export function bfs(start, cond, action) {
+  let remaining = [start];
+  let visited = 0;
+
+  while (remaining.length > 0) {
+    let node = remaining.shift();
+    if (! cond(node))
+      continue;
+
+    action(node);
+
+    for (let n of node.adjacent)
+      if (cond(n.link))
+        remaining.push(n.link);
+
+    visited += 1;
+  }
+
+  return visited;
+}
