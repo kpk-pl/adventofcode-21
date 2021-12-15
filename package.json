@@ -13,6 +13,7 @@
   },
   "type": "module",
   "dependencies": {
+    "a-star": "^0.2.0",
     "app-root-path": "^3.0.0",
     "n-readlines": "^1.0.1"
   }
