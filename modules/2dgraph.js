@@ -81,3 +81,64 @@ export function bfs(start, cond, action) {
 
   return visited;
 }
+
+export function dijkstra(start, end, opts) {
+  opts = opts || {};
+
+  const hash = (node) => `${node.x},${node.y}`;
+
+  let visited = Object.create(null);
+  visited[hash(start)] = 0;
+
+  let stack = [{node: start, cost: 0}];
+
+  function pushStack(element) {
+    // This could be writted as a binary search + splice but not now
+    stack.push(element);
+    stack.sort((l, r) => l.cost - r.cost);
+  }
+
+  loop: while (stack.length > 0) {
+    const element = stack.shift();
+    for (let neighbor of element.node.adjacent) {
+      const nbCost = element.cost + neighbor.link.value;
+      const nbHash = hash(neighbor.link);
+
+      if (neighbor.link === end) {
+        visited[nbHash] = nbCost;
+        break loop;
+      }
+
+      if (nbHash in visited) {
+        if (visited[nbHash] > nbCost)
+          visited[nbHash] = nbCost;
+      }
+      else {
+        pushStack({node: neighbor.link, cost: nbCost});
+        visited[nbHash] = nbCost;
+      }
+    }
+  }
+
+  function backTrack() {
+    let path = [end];
+
+    while (path[0] !== start) {
+      const myHash = hash(path[0]);
+      for (let neighbor of path[0].adjacent) {
+        const nbHash = hash(neighbor.link);
+        if (nbHash in visited && visited[nbHash] == visited[myHash] - path[0].value) {
+          path.unshift(neighbor.link);
+          break;
+        }
+      }
+    }
+
+    return path;
+  }
+
+  if (opts.path)
+    return {path: backTrack(), cost: visited[hash(end)]};
+  else
+    return {cost: visited[hash(end)]};
+}
